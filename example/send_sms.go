@@ -6,7 +6,7 @@ import (
 	"log"
 	"time"
 
-	"puzzel-smsgw/smsgw"
+	smsgw "github.com/ezspot/puzzel-smsgw-client"
 )
 
 func main() {
