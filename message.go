@@ -1,7 +1,7 @@
 // message.go
 package smsgw
 
-import "time"
+// Package smsgw provides a client for the Puzzel SMS Gateway API
 
 type Message struct {
 	Recipient       string    `json:"recipient"`
@@ -24,7 +24,7 @@ type Settings struct {
 	OriginatorSettings         *OriginatorSettings `json:"originatorSettings,omitempty"`
 	GasSettings                *GasSettings        `json:"gasSettings,omitempty"`
 	SendWindow                 *SendWindow         `json:"sendWindow,omitempty"`
-	Parameters                 map[string]string   `json:"parameter,omitempty"`
+	Parameter                  *Parameter          `json:"parameter,omitempty"`
 }
 
 type OriginatorSettings struct {
@@ -38,8 +38,22 @@ type GasSettings struct {
 }
 
 type SendWindow struct {
-	StartDate time.Time  `json:"startDate"`
-	StartTime *time.Time `json:"startTime,omitempty"`
-	StopDate  *time.Time `json:"stopDate,omitempty"`
-	StopTime  *time.Time `json:"stopTime,omitempty"`
+	StartDate string `json:"startDate"`
+	StopDate  string `json:"stopDate,omitempty"`
+	StartTime string `json:"startTime,omitempty"`
+	StopTime  string `json:"stopTime,omitempty"`
+}
+
+type Parameter struct {
+	BusinessModel                string `json:"businessModel,omitempty"`
+	Dcs                         string `json:"dcs,omitempty"`
+	Udh                         string `json:"udh,omitempty"`
+	Pid                         int    `json:"pid,omitempty"`
+	Flash                       bool   `json:"flash,omitempty"`
+	ParsingType                 string `json:"parsingType,omitempty"`
+	SkipCustomerReportDelivery  bool   `json:"skipCustomerReportDelivery,omitempty"`
+	StrexVerificationTimeout    string `json:"strexVerificationTimeout,omitempty"`
+	StrexMerchantSellOption     string `json:"strexMerchantSellOption,omitempty"`
+	StrexConfirmChannel         string `json:"strexConfirmChannel,omitempty"`
+	StrexAuthorizationToken     string `json:"strexAuthorizationToken,omitempty"`
 }

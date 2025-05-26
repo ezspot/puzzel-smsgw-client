@@ -10,17 +10,43 @@ import (
 	"time"
 )
 
+// ClientOption is a function that configures a Client
+type ClientOption func(*Client)
+
+// Client represents a Puzzel SMS Gateway client
 type Client struct {
-	baseURL    string
-	serviceID  int
-	username   string
-	password   string
-	httpClient *http.Client
+	baseURL        string
+	serviceID      int
+	username       string
+	password       string
+	batchReference string
+	httpClient     *http.Client
+}
+
+// WithBatchReference sets a custom batch reference for all requests
+func WithBatchReference(batchReference string) ClientOption {
+	return func(c *Client) {
+		c.batchReference = batchReference
+	}
+}
+
+// WithTimeout sets a custom timeout for the HTTP client
+func WithTimeout(timeout time.Duration) ClientOption {
+	return func(c *Client) {
+		c.httpClient.Timeout = timeout
+	}
+}
+
+// WithHTTPClient sets a custom HTTP client
+func WithHTTPClient(httpClient *http.Client) ClientOption {
+	return func(c *Client) {
+		c.httpClient = httpClient
+	}
 }
 
 // NewClient initializes and returns a new SMS Gateway client
-func NewClient(baseURL string, serviceID int, username, password string) *Client {
-	return &Client{
+func NewClient(baseURL string, serviceID int, username, password string, options ...ClientOption) *Client {
+	client := &Client{
 		baseURL:   baseURL,
 		serviceID: serviceID,
 		username:  username,
@@ -29,8 +55,21 @@ func NewClient(baseURL string, serviceID int, username, password string) *Client
 			Timeout: 10 * time.Second,
 		},
 	}
+	
+	// Apply options
+	for _, option := range options {
+		option(client)
+	}
+	
+	return client
 }
 
+// Send is a simplified method to send one or more messages
+func (c *Client) Send(ctx context.Context, messages []Message) (*SmsGatewayResponse, error) {
+	return c.SendMessages(ctx, messages, c.batchReference)
+}
+
+// SendMessages sends messages to the SMS gateway with an explicit batch reference
 func (c *Client) SendMessages(ctx context.Context, messages []Message, batchReference string) (*SmsGatewayResponse, error) {
 	requestBody := map[string]interface{}{
 		"serviceId":      c.serviceID,
